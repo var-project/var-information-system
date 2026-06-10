@@ -2,6 +2,8 @@ const LAST_STATUS_KEY = "vis:lastStatus";
 const HISTORY_KEY = "vis:history";
 const MESSAGE_VISIBILITY_KEY = "vis:showMessage";
 const CHANNEL_NAME = "vis:status";
+const AUTH_KEY = "vis:authenticated";
+const CONTROLLER_PASSWORD = "visproject2026";
 
 const categories = [
   {
@@ -95,10 +97,60 @@ function getFirebaseDb() {
   return null;
 }
 
+function initializeControllerAuth() {
+  if (sessionStorage.getItem(AUTH_KEY) === "true") {
+    showControllerApp();
+    return;
+  }
+
+  const overlay = document.getElementById("loginOverlay");
+  const input = document.getElementById("loginPassword");
+  const button = document.getElementById("loginButton");
+  const error = document.getElementById("loginError");
+
+  if (!overlay || !input || !button) {
+    initializeController();
+    return;
+  }
+
+  const attemptLogin = () => {
+    const password = input.value;
+    if (password === CONTROLLER_PASSWORD) {
+      sessionStorage.setItem(AUTH_KEY, "true");
+      showControllerApp();
+    } else {
+      error.textContent = "Incorrect password. Try again.";
+      input.classList.add("error");
+      input.value = "";
+      input.focus();
+      setTimeout(() => {
+        input.classList.remove("error");
+      }, 1500);
+    }
+  };
+
+  button.addEventListener("click", attemptLogin);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      attemptLogin();
+    }
+  });
+
+  input.focus();
+}
+
+function showControllerApp() {
+  const overlay = document.getElementById("loginOverlay");
+  const content = document.getElementById("appContent");
+  if (overlay) overlay.classList.add("hidden");
+  if (content) content.classList.add("authenticated");
+  initializeController();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const page = document.body.dataset.page;
   if (page === "controller") {
-    initializeController();
+    initializeControllerAuth();
   }
 
   if (page === "viewer") {
