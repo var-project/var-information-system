@@ -23,6 +23,18 @@ const categories = [
     ]
   },
   {
+    id: "red-card",
+    title: "Red Card",
+    shortcutHint: "Keys B1-B4",
+    color: "#3B82F6",
+    items: [
+      { code: "B1", text: "VAR Check Possible Red Card" },
+      { code: "B2", text: "VAR Check Possible No Red Card" },
+      { code: "B3", text: "Check Complete Decision Red Card" },
+      { code: "B4", text: "Check Complete Decision No Red Card" }
+    ]
+  },
+  {
     id: "penalty",
     title: "Penalty",
     shortcutHint: "Keys C1-C6",
@@ -37,15 +49,15 @@ const categories = [
     ]
   },
   {
-    id: "red-card",
-    title: "Red Card",
-    shortcutHint: "Keys B1-B4",
-    color: "#3B82F6",
+    id: "mistaken-identity",
+    title: "Mistaken Identity",
+    shortcutHint: "Disciplinary identity",
+    color: "#FB923C",
     items: [
-      { code: "B1", text: "VAR Check Possible Red Card" },
-      { code: "B2", text: "VAR Check Possible No Red Card" },
-      { code: "B3", text: "Check Complete Decision Red Card" },
-      { code: "B4", text: "Check Complete Decision No Red Card" }
+      { code: "D1", text: "VAR Check Mistaken Identity" },
+      { code: "D2", text: "Check Complete Decision Mistaken Identity" },
+      { code: "D3", text: "VAR Check Red Card Mistaken" },
+      { code: "D4", text: "VAR Check Yellow Card Mistaken" }
     ]
   },
   {
@@ -56,18 +68,6 @@ const categories = [
     items: [
       { code: "E1", text: "VAR Check" },
       { code: "E2", text: "Check Complete" }
-    ]
-  },
-  {
-    id: "mistaken-identity",
-    title: "Mistaken Identity",
-    shortcutHint: "Disciplinary identity",
-    color: "#FB923C",
-    items: [
-      { code: "D1", text: "VAR Check Mistaken Identity" },
-      { code: "D2", text: "Check Complete Decision Mistaken Identity" },
-      { code: "D3", text: "VAR Check Red Card Mistaken" },
-      { code: "D4", text: "VAR Check Yellow Card Mistaken" }
     ]
   },
   {
