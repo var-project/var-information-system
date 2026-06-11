@@ -22,7 +22,7 @@
     }
 
     body {
-      background-image: url("bg.jpg");
+      background-image: url("bg.png");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -41,26 +41,24 @@
       isolation: isolate;
     }
 
-    /***.viewer-overlay {
+    .viewer-overlay {
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: rgba(0, 0, 0, 0.4);
-      transition: background 250ms ease;
-    }***/
+    }
 
     .viewer-message {
       max-width: 90%;
       margin: 0;
       color: #fff;
-      font-size: clamp(44px, 10vw, 190px);
-      line-height: 1.05;
+      font-size: 6vw;
+      line-height: 1.45;
       font-weight: 800;
       letter-spacing: 0.05em;
       text-align: center;
       text-transform: uppercase;
       overflow-wrap: anywhere;
-      text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 8px 34px rgba(0, 0, 0, 0.72);
+      /**text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 8px 34px rgba(0, 0, 0, 0.72);**/
       animation: messageIn 300ms ease both;
     }
 
@@ -110,7 +108,7 @@
 
     @media (max-width: 767px) {
       .viewer-message {
-        font-size: clamp(40px, 13vw, 108px);
+        font-size: 7vw;
         max-width: 94%;
       }
 

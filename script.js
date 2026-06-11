@@ -14,11 +14,11 @@ const categories = [
     items: [
       { code: "A1", text: "VAR Check Possible Goal" },
       { code: "A2", text: "VAR Check Possible No Goal" },
-      { code: "A3", text: "VAR Check Complete Goal Confirmed" },
-      { code: "A4", text: "VAR Check Complete Goal Cancelled" },
-      { code: "A5", text: "VAR Check Complete Decision No Goal" },
-      { code: "A6", text: "VAR Check Complete Decision No Offside" },
-      { code: "A7", text: "VAR Check Complete Decision Offside" },
+      { code: "A3", text: "Check Complete Goal Confirmed" },
+      { code: "A4", text: "Check Complete Goal Cancelled" },
+      { code: "A5", text: "Check Complete Decision No Goal" },
+      { code: "A6", text: "Check Complete Decision No Offside" },
+      { code: "A7", text: "Check Complete Decision Offside" },
       { code: "A8", text: "VAR Review" }
     ]
   },
@@ -30,10 +30,10 @@ const categories = [
     items: [
       { code: "C1", text: "VAR Check Possible Penalty" },
       { code: "C2", text: "VAR Check Possible No Penalty" },
-      { code: "C3", text: "VAR Check Complete Decision Penalty" },
-      { code: "C4", text: "VAR Check Complete Decision No Penalty" },
-      { code: "C5", text: "VAR Check Complete Decision Retaken Penalty" },
-      { code: "C6", text: "VAR Check Complete Decision Offside" }
+      { code: "C3", text: "Check Complete Decision Penalty" },
+      { code: "C4", text: "Check Complete Decision No Penalty" },
+      { code: "C5", text: "Check Complete Decision Retaken Penalty" },
+      { code: "C6", text: "Check Complete Decision Offside" }
     ]
   },
   {
@@ -44,8 +44,8 @@ const categories = [
     items: [
       { code: "B1", text: "VAR Check Possible Red Card" },
       { code: "B2", text: "VAR Check Possible No Red Card" },
-      { code: "B3", text: "VAR Check Complete Decision Red Card" },
-      { code: "B4", text: "VAR Check Complete Decision No Red Card" }
+      { code: "B3", text: "Check Complete Decision Red Card" },
+      { code: "B4", text: "Check Complete Decision No Red Card" }
     ]
   },
   {
@@ -55,7 +55,7 @@ const categories = [
     color: "#FDE047",
     items: [
       { code: "E1", text: "VAR Check" },
-      { code: "E2", text: "VAR Check Complete" }
+      { code: "E2", text: "Check Complete" }
     ]
   },
   {
@@ -65,7 +65,7 @@ const categories = [
     color: "#FB923C",
     items: [
       { code: "D1", text: "VAR Check Mistaken Identity" },
-      { code: "D2", text: "VAR Check Complete Decision Mistaken Identity" },
+      { code: "D2", text: "Check Complete Decision Mistaken Identity" },
       { code: "D3", text: "VAR Check Red Card Mistaken" },
       { code: "D4", text: "VAR Check Yellow Card Mistaken" }
     ]
@@ -612,6 +612,14 @@ function initializeViewer() {
   monitorViewerConnection();
 }
 
+function formatMessageText(text) {
+  const words = text.split(/\s+/);
+  if (words.length > 2) {
+    return words.slice(0, 2).join(" ") + "<br>" + words.slice(2).join(" ");
+  }
+  return text;
+}
+
 function renderViewerStatus(data) {
   const message = document.getElementById("viewerMessage");
   const overlay = document.getElementById("viewerOverlay");
@@ -626,10 +634,10 @@ function renderViewerStatus(data) {
   if (image) {
     image.style.display = "none";
   }
-  message.textContent = displayText || "STANDBY";
+  message.innerHTML = formatMessageText(displayText || "STANDBY");
   message.style.display = showMessage ? "block" : "none";
   overlay.style.background = getOverlayColor(displayColor);
-  document.body.style.backgroundImage = `url("${imageFile}"), url("bg.jpg")`;
+  document.body.style.backgroundImage = showMessage ? `url("bg.png")` : `url("${imageFile}"), url("bg.png")`;
 
   message.style.animation = "none";
   void message.offsetWidth;
@@ -646,7 +654,7 @@ function renderViewerImage(fileName) {
   image.style.display = "block";
   message.style.display = "none";
   overlay.style.background = "rgba(0, 0, 0, 0.15)";
-  document.body.style.backgroundImage = `url("${fileName}"), url("bg.jpg")`;
+  document.body.style.backgroundImage = `url("${fileName}"), url("bg.png")`;
 }
 
 function getOverlayColor(color) {
