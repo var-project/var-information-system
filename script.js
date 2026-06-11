@@ -622,12 +622,10 @@ function formatMessageText(text) {
 
 function renderViewerStatus(data) {
   const message = document.getElementById("viewerMessage");
-  const overlay = document.getElementById("viewerOverlay");
   const image = document.getElementById("viewerImage");
-  if (!message || !overlay) return;
+  if (!message) return;
 
-  const displayText = data.text || "STANDBY";
-  const displayColor = data.code === "CLEAR" ? "black" : data.color;
+  const displayText = data.text || "";
   const imageFile = getStatusFileName(data.code);
   const showMessage = typeof data.showMessage === "boolean" ? data.showMessage : getMessageVisibility();
 
@@ -635,9 +633,12 @@ function renderViewerStatus(data) {
     image.style.display = "none";
   }
   message.innerHTML = formatMessageText(displayText || "STANDBY");
-  message.style.display = showMessage ? "block" : "none";
-  overlay.style.background = getOverlayColor(displayColor);
-  document.body.style.backgroundImage = showMessage ? `url("bg.png")` : `url("${imageFile}"), url("bg.png")`;
+  message.style.display = (showMessage && data.code !== "CLEAR") ? "block" : "none";
+  if (data.code === "CLEAR") {
+    document.body.style.backgroundImage = `url("clear.png")`;
+  } else {
+    document.body.style.backgroundImage = showMessage ? `url("bg.png")` : `url("${imageFile}"), url("bg.png")`;
+  }
 
   message.style.animation = "none";
   void message.offsetWidth;
@@ -647,29 +648,12 @@ function renderViewerStatus(data) {
 function renderViewerImage(fileName) {
   const message = document.getElementById("viewerMessage");
   const image = document.getElementById("viewerImage");
-  const overlay = document.getElementById("viewerOverlay");
-  if (!image || !message || !overlay) return;
+  if (!image || !message) return;
 
   image.src = fileName;
   image.style.display = "block";
   message.style.display = "none";
-  overlay.style.background = "rgba(0, 0, 0, 0.15)";
   document.body.style.backgroundImage = `url("${fileName}"), url("bg.png")`;
-}
-
-function getOverlayColor(color) {
-  const normalized = String(color || "").toLowerCase();
-  const overlays = {
-    white: "rgba(255, 255, 255, 0.25)",
-    "#3b82f6": "rgba(59, 130, 246, 0.35)",
-    "#facc15": "rgba(250, 204, 21, 0.35)",
-    "#fb923c": "rgba(251, 146, 60, 0.35)",
-    "#fde047": "rgba(253, 224, 71, 0.35)",
-    "#22c55e": "rgba(34, 197, 94, 0.35)",
-    black: "rgba(0, 0, 0, 0.5)"
-  };
-
-  return overlays[normalized] || "rgba(0, 0, 0, 0.4)";
 }
 
 function saveLatestStatus(data) {

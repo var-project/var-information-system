@@ -41,19 +41,14 @@
       isolation: isolate;
     }
 
-    .viewer-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-    }
-
     .viewer-message {
       max-width: 90%;
       margin: 0;
       color: #fff;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       font-size: 6vw;
       line-height: 1.45;
-      font-weight: 800;
+      font-weight: 400;
       letter-spacing: 0.05em;
       text-align: center;
       text-transform: uppercase;
@@ -123,7 +118,6 @@
 </head>
 <body data-page="viewer">
   <main class="viewer-screen" aria-live="polite">
-    <div id="viewerOverlay" class="viewer-overlay"></div>
     <img id="viewerImage" class="viewer-image" alt="VAR status image">
     <h1 id="viewerMessage" class="viewer-message">STANDBY</h1>
   </main>
