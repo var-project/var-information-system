@@ -252,7 +252,7 @@ function initializeController() {
   renderHistory(getHistory());
   bindCustomMessage();
   bindClearButton();
-  bindSettingsButton();
+  bindMessageToggle();
   bindKeyboardShortcuts();
   monitorConnection();
 }
@@ -350,133 +350,61 @@ function bindClearButton() {
   });
 }
 
-function bindSettingsButton() {
-  const button = document.getElementById("settingsButton");
+function bindMessageToggle() {
+  const settingsButton = document.getElementById("settingsButton");
+  const button = document.getElementById("settingsMessageToggle");
   const modal = document.getElementById("settingsModal");
   const closeBtn = document.getElementById("closeSettings");
-  const messageToggle = document.getElementById("settingsMessageToggle");
   if (!button || !modal) return;
 
+  renderMessageToggle(button, getMessageVisibility());
+
+  if (settingsButton) {
+    settingsButton.addEventListener("click", () => {
+      renderMessageToggle(button, getMessageVisibility());
+      modal.classList.add("show");
+    });
+  }
+
   button.addEventListener("click", () => {
-    renderSettingsToggle(messageToggle, getMessageVisibility());
-    updateImagePreview("bgPreview", "bg.png");
-    updateImagePreview("clearPreview", "clear.png");
-    modal.classList.add("show");
-  });
+    const nextValue = !getMessageVisibility();
+    setMessageVisibility(nextValue);
+    renderMessageToggle(button, nextValue);
 
-  closeBtn.addEventListener("click", closeSettingsModal);
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) closeSettingsModal();
-  });
-
-  if (messageToggle) {
-    messageToggle.addEventListener("click", () => {
-      const nextValue = !getMessageVisibility();
-      setMessageVisibility(nextValue);
-      renderSettingsToggle(messageToggle, nextValue);
-
-      const latestStatus = getLatestStatus();
-      if (latestStatus) {
-        const updatedStatus = {
-          ...latestStatus,
-          showMessage: nextValue,
-          time: Date.now()
-        };
-        saveLatestStatus(updatedStatus);
-        publishStatus(updatedStatus);
-      } else {
-        const standbyStatus = {
-          code: "STANDBY",
-          text: "STANDBY",
-          color: "black",
-          showMessage: nextValue,
-          time: Date.now()
-        };
-        saveLatestStatus(standbyStatus);
-        publishStatus(standbyStatus);
-      }
-
-      showToast(nextValue ? "Viewer Message Shown" : "Viewer Message Hidden");
-    });
-  }
-
-  bindImageUpload("bgUpload", "bgUploadBtn", "bgClearBtn", "bg.png", "bgPreview");
-  bindImageUpload("clearUpload", "clearUploadBtn", "clearClearBtn", "clear.png", "clearPreview");
-}
-
-function renderSettingsToggle(button, showMessage) {
-  if (!button) return;
-  button.textContent = showMessage ? "HIDDEN" : "SHOWN";
-  button.setAttribute("aria-pressed", String(!showMessage));
-  button.classList.toggle("is-hidden", showMessage);
-}
-
-function closeSettingsModal() {
-  const modal = document.getElementById("settingsModal");
-  if (modal) modal.classList.remove("show");
-}
-
-function bindImageUpload(inputId, uploadBtnId, clearBtnId, fileName, previewId) {
-  const input = document.getElementById(inputId);
-  const uploadBtn = document.getElementById(uploadBtnId);
-  const clearBtn = document.getElementById(clearBtnId);
-  const preview = document.getElementById(previewId);
-
-  if (!input || !uploadBtn) return;
-
-  uploadBtn.addEventListener("click", () => input.click());
-
-  input.addEventListener("change", () => {
-    const file = input.files && input.files[0];
-    if (!file) return;
-    saveImageToDb(fileName, file).then(() => {
-      return saveImageToImgFolder(fileName, file).then(() => {
-        showToast(`${fileName} uploaded and saved to img/`);
-      }).catch(() => {
-        showToast(`${fileName} uploaded (browser storage only)`);
-      });
-      updateImagePreview(previewId, fileName);
-    }).catch(() => {
-      showToast("Upload failed");
-    });
-    input.value = "";
-  });
-
-  if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
-      clearImageFromDb(fileName).then(() => {
-        removeImageFromImgFolder(fileName).then(() => {
-          showToast(`${fileName} reset to default`);
-        }).catch(() => {
-          showToast(`${fileName} reset (browser storage only)`);
-        });
-        updateImagePreview(previewId, fileName);
-      }).catch(() => {
-        showToast("Reset failed");
-      });
-    });
-  }
-}
-
-function updateImagePreview(previewId, fileName) {
-  const preview = document.getElementById(previewId);
-  if (!preview) return;
-
-  getImageFromDb(fileName).then((dataUrl) => {
-    preview.innerHTML = "";
-    if (dataUrl) {
-      const img = document.createElement("img");
-      img.src = dataUrl;
-      img.alt = fileName;
-      img.className = "preview-image";
-      preview.appendChild(img);
+    const latestStatus = getLatestStatus();
+    if (latestStatus) {
+      const updatedStatus = {
+        ...latestStatus,
+        showMessage: nextValue,
+        time: Date.now()
+      };
+      saveLatestStatus(updatedStatus);
+      publishStatus(updatedStatus);
     } else {
-      const empty = document.createElement("div");
-      empty.className = "preview-empty";
-      empty.textContent = `Default ${fileName}`;
-      preview.appendChild(empty);
+      const standbyStatus = {
+        code: "STANDBY",
+        text: "STANDBY",
+        color: "black",
+        showMessage: nextValue,
+        time: Date.now()
+      };
+      saveLatestStatus(standbyStatus);
+      publishStatus(standbyStatus);
     }
+
+    showToast(nextValue ? "Viewer Message Shown" : "Viewer Message Hidden");
   });
+
+  closeBtn.addEventListener("click", () => modal.classList.remove("show"));
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) modal.classList.remove("show");
+  });
+}
+
+function renderMessageToggle(button, showMessage) {
+  button.textContent = showMessage ? "HIDE MESSAGE" : "SHOW MESSAGE";
+  button.setAttribute("aria-pressed", String(showMessage));
+  button.classList.toggle("is-hidden", !showMessage);
 }
 
 function bindKeyboardShortcuts() {
@@ -722,16 +650,16 @@ async function renderViewerStatus(data) {
   message.innerHTML = formatMessageText(displayText || "STANDBY");
   message.style.display = (showMessage && data.code !== "CLEAR") ? "block" : "none";
 
-  const bgSrc = await getImageFromDb("bg.png");
-  const clearSrc = await getImageFromDb("clear.png");
+  const bgExists = await checkImageExists("bg.png");
+  const clearExists = await checkImageExists("clear.png");
 
   if (data.code === "CLEAR") {
-    document.body.style.backgroundImage = clearSrc ? `url("${clearSrc}")` : "none";
+    document.body.style.backgroundImage = clearExists ? `url("clear.png")` : "none";
   } else {
     if (showMessage) {
-      document.body.style.backgroundImage = bgSrc ? `url("${bgSrc}")` : "none";
+      document.body.style.backgroundImage = bgExists ? `url("bg.png")` : "none";
     } else {
-      document.body.style.backgroundImage = bgSrc ? `url("${imageFile}"), url("${bgSrc}")` : `url("${imageFile}")`;
+      document.body.style.backgroundImage = `url("${imageFile}")`;
     }
   }
 
@@ -749,8 +677,17 @@ async function renderViewerImage(fileName) {
   image.style.display = "block";
   message.style.display = "none";
 
-  const bgSrc = await getImageFromDb("bg.png");
-  document.body.style.backgroundImage = bgSrc ? `url("img/${fileName}"), url("${bgSrc}")` : `url("img/${fileName}")`;
+  const bgExists = await checkImageExists("bg.png");
+  document.body.style.backgroundImage = bgExists ? `url("img/${fileName}"), url("bg.png")` : `url("img/${fileName}")`;
+}
+
+function checkImageExists(fileName) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = fileName;
+  });
 }
 
 function saveLatestStatus(data) {
@@ -799,144 +736,11 @@ function setText(id, value) {
   }
 }
 
-let imageDb = null;
-
-function openImageDb() {
-  if (imageDb) return Promise.resolve(imageDb);
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("var-images-db", 1);
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains("images")) {
-        db.createObjectStore("images");
-      }
-    };
-    request.onsuccess = (event) => {
-      imageDb = event.target.result;
-      resolve(imageDb);
-    };
-    request.onerror = () => reject(request.error);
+function checkImageExists(fileName) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = fileName;
   });
-}
-
-function saveImageToDb(fileName, blob) {
-  return openImageDb().then((db) => {
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction("images", "readwrite");
-      const store = tx.objectStore("images");
-      const request = store.put(blob, fileName);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-  });
-}
-
-function clearImageFromDb(fileName) {
-  return openImageDb().then((db) => {
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction("images", "readwrite");
-      const store = tx.objectStore("images");
-      const request = store.delete(fileName);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-  });
-}
-
-function getImageFromDb(fileName) {
-  return openImageDb().then((db) => {
-    return new Promise((resolve) => {
-      const tx = db.transaction("images", "readonly");
-      const store = tx.objectStore("images");
-      const request = store.get(fileName);
-      request.onsuccess = () => resolve(request.result || null);
-      request.onerror = () => resolve(null);
-    });
-  }).then((blob) => {
-    if (!blob) return null;
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
-    });
-  });
-}
-
-let imgDirHandle = null;
-
-function requestImgFolderAccess() {
-  if (!("showDirectoryPicker" in window)) {
-    return Promise.reject(new Error("File System Access API not supported"));
-  }
-  return window.showDirectoryPicker({ mode: "readwrite" }).then((handle) => {
-    if (handle.name !== "img") {
-      return verifyAndSetDirHandle(handle);
-    }
-    imgDirHandle = handle;
-    return imgDirHandle;
-  });
-}
-
-function verifyAndSetDirHandle(handle) {
-  return handle.getDirectoryPermission().then((permission) => {
-    if (permission === "granted") {
-      imgDirHandle = handle;
-      return imgDirHandle;
-    }
-    return handle.requestPermission({ mode: "readwrite" }).then((result) => {
-      if (result === "granted") {
-        imgDirHandle = handle;
-        return imgDirHandle;
-      }
-      throw new Error("Permission denied");
-    });
-  });
-}
-
-function saveImageToImgFolder(fileName, blob) {
-  if (!imgDirHandle) {
-    return requestImgFolderAccess().then(() => saveImageToImgFolder(fileName, blob));
-  }
-  return imgDirHandle.getFilePermission().then((permission) => {
-    if (permission === "granted") {
-      return writeFileToHandle(fileName, blob);
-    }
-    return imgDirHandle.requestPermission({ mode: "readwrite" }).then((result) => {
-      if (result === "granted") {
-        return writeFileToHandle(fileName, blob);
-      }
-      throw new Error("Permission denied");
-    });
-  });
-}
-
-function writeFileToHandle(fileName, blob) {
-  return imgDirHandle.getFileHandle(fileName, { create: true }).then((fileHandle) => {
-    return fileHandle.createWritable().then((writable) => {
-      return writable.write(blob).then(() => writable.close());
-    });
-  });
-}
-
-function removeImageFromImgFolder(fileName) {
-  if (!imgDirHandle) {
-    return Promise.resolve();
-  }
-  return imgDirHandle.getFilePermission().then((permission) => {
-    if (permission === "granted") {
-      return deleteFileFromHandle(fileName);
-    }
-    return imgDirHandle.requestPermission({ mode: "readwrite" }).then((result) => {
-      if (result === "granted") {
-        return deleteFileFromHandle(fileName);
-      }
-      return Promise.resolve();
-    });
-  }).catch(() => Promise.resolve());
-}
-
-function deleteFileFromHandle(fileName) {
-  return imgDirHandle.getFileHandle(fileName).then((fileHandle) => {
-    return imgDirHandle.removeEntry(fileName);
-  }).catch(() => Promise.resolve());
 }
