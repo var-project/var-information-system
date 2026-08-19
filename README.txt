@@ -3,11 +3,11 @@ VAR Information System
 
 1. Application Overview
 -----------------------
-VAR Information System is a lightweight HTML, CSS, and vanilla JavaScript control panel for changing a fullscreen viewer display.
+VAR Information System is a lightweight HTML, CSS, vanilla JavaScript, and Firebase Realtime Database control panel for changing a fullscreen viewer display.
 
-This version does not use Firebase, a backend server, a build tool, or any third-party JavaScript framework.
+Firebase is used for real-time syncing between different browsers, devices, or networks. No NodeJS, npm, build tool, backend server, or UI framework is required.
 
-Open controller.html and viewer.html in the same browser. When an operator clicks a status button in controller.html, viewer.html updates its background image to the matching PNG file.
+Open controller.html on the operator device and viewer.html on the display device. When an operator clicks a status button in controller.html, viewer.html updates its background image to the matching PNG file.
 
 Example:
 
@@ -16,7 +16,7 @@ Example:
 - B1 button changes viewer.html background to B1.png
 - C3 button changes viewer.html background to C3.png
 - F5 button changes viewer.html background to F5.png
-- CLEAR button changes viewer.html background to CLEAR.png
+- CLEAR button changes viewer.html background to clear.png
 
 
 2. Important Sync Limitation
@@ -36,6 +36,10 @@ Examples that work:
 Both devices must have internet access for Firebase syncing to work.
 If Firebase is unreachable, the app falls back to BroadcastChannel (same browser only).
 
+Firebase database path used by the application:
+
+/var_status
+
 
 3. File Structure
 -----------------
@@ -47,42 +51,42 @@ script.js
 bg.jpg
 README.txt
 
-Place your VAR image files in the same folder:
+Place your VAR image files inside the img folder:
 
-A1.png
-A2.png
-A3.png
-A4.png
-A5.png
-A6.png
-A7.png
-A8.png
-B1.png
-B2.png
-B3.png
-B4.png
-C1.png
-C2.png
-C3.png
-C4.png
-C5.png
-C6.png
-D1.png
-D2.png
-D3.png
-D4.png
-E1.png
-E2.png
-F1.png
-F2.png
-F3.png
-F4.png
-F5.png
-CLEAR.png
+img/A1.png
+img/A2.png
+img/A3.png
+img/A4.png
+img/A5.png
+img/A6.png
+img/A7.png
+img/A8.png
+img/B1.png
+img/B2.png
+img/B3.png
+img/B4.png
+img/C1.png
+img/C2.png
+img/C3.png
+img/C4.png
+img/C5.png
+img/C6.png
+img/D1.png
+img/D2.png
+img/D3.png
+img/D4.png
+img/E1.png
+img/E2.png
+img/F1.png
+img/F2.png
+img/F3.png
+img/F4.png
+img/F5.png
+clear.png
 
 Optional:
 
-CUSTOM.png
+img/CUSTOM.png
 
 
 4. How To Use
@@ -118,13 +122,13 @@ Each PNG filename must match the status code exactly.
 
 Examples:
 
-A1.png
-B3.png
-C6.png
-D2.png
-E1.png
-F5.png
-CLEAR.png
+img/A1.png
+img/B3.png
+img/C6.png
+img/D2.png
+img/E1.png
+img/F5.png
+clear.png
 
 Use uppercase filenames to avoid hosting problems on case-sensitive servers.
 
@@ -152,9 +156,9 @@ Example:
 
 A1 selected:
 
-background-image: A1.png, bg.jpg
+background-image: img/A1.png, bg.png
 
-If A1.png is missing, the browser keeps bg.jpg visible as fallback.
+If img/A1.png is missing, the browser keeps bg.png visible as fallback.
 
 The text message layer can be shown or hidden globally from controller.html. Hide the message when your PNG already contains the final screen graphic.
 
@@ -210,7 +214,7 @@ This app can run from:
 - Nginx
 - Any simple file host
 
-No NodeJS, npm, backend, or database is required for same-device operation.
+No NodeJS, npm, backend server, or build process is required. Firebase Realtime Database is required for different browsers or different devices.
 
 
 12. Internet Connection Requirements
@@ -258,8 +262,8 @@ Problem: Message text appears over the graphic.
 
 Problem: A1 background does not appear.
 
-- Confirm A1.png exists in the same folder as viewer.html.
-- Confirm the filename is uppercase A1.png.
+- Confirm img/A1.png exists.
+- Confirm the filename is uppercase A1.png inside the img folder.
 - If hosted online, confirm the file was uploaded.
 
 Problem: Browser shows only bg.jpg.

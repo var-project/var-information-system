@@ -2,6 +2,7 @@ const LAST_STATUS_KEY = "vis:lastStatus";
 const HISTORY_KEY = "vis:history";
 const MESSAGE_VISIBILITY_KEY = "vis:showMessage";
 const CHANNEL_NAME = "vis:status";
+const FIREBASE_STATUS_PATH = "/var_status";
 const AUTH_KEY = "vis:authenticated";
 const CONTROLLER_PASSWORD = "visproject2026";
 
@@ -91,7 +92,7 @@ let pendingShortcutTimer = null;
 let statusChannel = null;
 
 function getFirebaseDb() {
-  if (typeof firebase !== "undefined" && firebase.apps.length > 0) {
+  if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length > 0 && firebase.database) {
     return firebase.database();
   }
   return null;
@@ -168,15 +169,20 @@ function sendLocalStatus(data) {
   };
 
   saveLatestStatus(payload);
-  publishStatus(payload);
-
-  return Promise.resolve({
+  return publishStatus(payload).then(() => ({
     fileName: getStatusFileName(payload.code)
-  });
+  }));
 }
 
 function getStatusFileName(code) {
-  return `img/${String(code || "STANDBY").toUpperCase()}.png`;
+  const normalizedCode = String(code || "STANDBY").toUpperCase();
+  if (normalizedCode === "CLEAR") {
+    return "clear.png";
+  }
+  if (normalizedCode === "STANDBY") {
+    return "bg.png";
+  }
+  return `img/${normalizedCode}.png`;
 }
 
 function getStatusChannel() {
@@ -199,10 +205,10 @@ function publishStatus(data) {
 
   const db = getFirebaseDb();
   if (db) {
-    db.ref("vis/status").set(data).catch((error) => {
-      console.error("Firebase write failed:", error);
-    });
+    return db.ref(FIREBASE_STATUS_PATH).set(data);
   }
+
+  return Promise.resolve();
 }
 
 function listenLocalStatus(callback) {
@@ -230,9 +236,10 @@ function listenLocalStatus(callback) {
 
   const db = getFirebaseDb();
   if (db) {
-    db.ref("vis/status").on("value", (snapshot) => {
+    db.ref(FIREBASE_STATUS_PATH).on("value", (snapshot) => {
       const data = snapshot.val();
       if (data && data.code) {
+        saveLatestStatus(data);
         callback(data);
       }
     });
@@ -635,7 +642,7 @@ function formatMessageText(text) {
   return text;
 }
 
-async function renderViewerStatus(data) {
+function renderViewerStatus(data) {
   const message = document.getElementById("viewerMessage");
   const image = document.getElementById("viewerImage");
   if (!message) return;
@@ -649,19 +656,7 @@ async function renderViewerStatus(data) {
   }
   message.innerHTML = formatMessageText(displayText || "STANDBY");
   message.style.display = (showMessage && data.code !== "CLEAR") ? "block" : "none";
-
-  const bgExists = await checkImageExists("bg.png");
-  const clearExists = await checkImageExists("clear.png");
-
-  if (data.code === "CLEAR") {
-    document.body.style.backgroundImage = clearExists ? `url("clear.png")` : "none";
-  } else {
-    if (showMessage) {
-      document.body.style.backgroundImage = bgExists ? `url("bg.png")` : "none";
-    } else {
-      document.body.style.backgroundImage = `url("${imageFile}")`;
-    }
-  }
+  document.body.style.backgroundImage = `url("${imageFile}"), url("bg.png")`;
 
   message.style.animation = "none";
   void message.offsetWidth;
@@ -734,13 +729,4 @@ function setText(id, value) {
   if (node) {
     node.textContent = value;
   }
-}
-
-function checkImageExists(fileName) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = fileName;
-  });
 }

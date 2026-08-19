@@ -123,8 +123,8 @@
   </main>
   <div id="viewerConnectionLost" class="connection-lost">CONNECTION LOST</div>
 
-  <script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD-TJX_lfRqDHal37sPggWOBu0HlMtFv0U",
@@ -135,7 +135,9 @@
       messagingSenderId: "283238330457",
       appId: "1:283238330457:web:3c37c967c13f1d5e0dc148"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (window.firebase && !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
   </script>
   <script src="script.js"></script>
 </body>
