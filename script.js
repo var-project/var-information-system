@@ -205,7 +205,10 @@ function publishStatus(data) {
 
   const db = getFirebaseDb();
   if (db) {
-    return db.ref(FIREBASE_STATUS_PATH).set(data);
+    return db.ref(FIREBASE_STATUS_PATH).set(data).catch((error) => {
+      const reason = error && error.message ? error.message : "Unknown Firebase error";
+      throw new Error(`Firebase write failed: ${reason}`);
+    });
   }
 
   return Promise.resolve();
@@ -469,7 +472,8 @@ function handleSend(data, sourceButton) {
     })
     .catch((error) => {
       console.error("Unable to update VAR viewer:", error);
-      showToast("Viewer Update Failed");
+      const message = error && error.message ? error.message : "Viewer Update Failed";
+      showToast(message.includes("PERMISSION_DENIED") ? "Firebase Permission Denied" : "Viewer Update Failed");
     });
 }
 
@@ -487,17 +491,17 @@ function renderConnectionStatus(isOnline) {
   if (!status || !dot) return;
 
   const db = getFirebaseDb();
-  const modeText = db ? "Firebase" : "Local File Mode";
+  const modeText = db ? "Firebase Connected" : "Firebase Not Loaded";
 
-  status.textContent = isOnline ? modeText : "Offline";
-  dot.classList.toggle("online", isOnline);
-  dot.classList.toggle("offline", !isOnline);
+  status.textContent = db && isOnline ? modeText : db ? "Firebase Offline" : modeText;
+  dot.classList.toggle("online", Boolean(db && isOnline));
+  dot.classList.toggle("offline", !db || !isOnline);
 }
 
 function monitorConnection() {
   const db = getFirebaseDb();
   if (!db) {
-    renderConnectionStatus(true);
+    renderConnectionStatus(false);
     return;
   }
 
