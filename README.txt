@@ -48,7 +48,7 @@ Main application files:
 controller.html
 viewer.html
 script.js
-bg.jpg
+bg.png
 README.txt
 
 Place your VAR image files inside the img folder:
@@ -100,8 +100,8 @@ img/CUSTOM.png
 
 Use the Viewer Message button in the Last Sent panel to switch between:
 
-- Show message text over the graphic
-- Hide message text and show only the graphic
+- Show message text over bg.png
+- Hide message text and show only the selected code graphic
 
 This setting is global. It applies to every VAR status button until changed again.
 
@@ -148,26 +148,30 @@ Use high-contrast text suitable for stadium screens, media centers, and broadcas
 
 7. Viewer Background Behavior
 -----------------------------
-viewer.html starts with bg.jpg.
+viewer.html starts with bg.png.
 
-When a status is selected, viewer.html uses the matching PNG as the first background layer and bg.jpg as fallback.
+When Show Message is active, viewer.html uses bg.png from the root folder and displays the selected VAR message text above it.
+
+When Hide Message is active, viewer.html hides the text and uses the matching PNG from the img folder.
 
 Example:
 
-A1 selected:
+A1 selected with Hide Message:
 
-background-image: img/A1.png, bg.png
+background-image: img/A1.png
 
-If img/A1.png is missing, the browser keeps bg.png visible as fallback.
+A1 selected with Show Message:
 
-The text message layer can be shown or hidden globally from controller.html. Hide the message when your PNG already contains the final screen graphic.
+background-image: bg.png
+
+Hide the message when your PNG already contains the final screen graphic.
 
 
-8. Replacing bg.jpg
+8. Replacing bg.png
 -------------------
-viewer.html uses bg.jpg as the default background.
+viewer.html uses bg.png as the default background.
 
-To change the default background, replace bg.jpg with another JPG file using the same filename.
+To change the default background, replace bg.png with another PNG file using the same filename.
 
 
 9. Mobile Usage Recommendations
@@ -258,7 +262,7 @@ Problem: viewer.html does not change after clicking A1.
 Problem: Message text appears over the graphic.
 
 - Click HIDE MESSAGE in controller.html.
-- The viewer will keep showing only the selected PNG graphic until SHOW MESSAGE is clicked.
+- The viewer will keep showing only the selected PNG graphic from the img folder until SHOW MESSAGE is clicked.
 
 Problem: A1 background does not appear.
 
@@ -266,7 +270,7 @@ Problem: A1 background does not appear.
 - Confirm the filename is uppercase A1.png inside the img folder.
 - If hosted online, confirm the file was uploaded.
 
-Problem: Browser shows only bg.jpg.
+Problem: Browser shows only bg.png.
 
 - The selected PNG file is missing or the filename does not match the status code.
 - Check uppercase/lowercase spelling.

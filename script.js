@@ -467,8 +467,8 @@ function handleSend(data, sourceButton) {
   addToHistory(data);
 
   return sendLocalStatus(data)
-    .then((result) => {
-      showToast(`Viewer Updated: ${result.fileName}`);
+    .then(() => {
+      showToast(data.text || data.code || "Viewer Updated");
     })
     .catch((error) => {
       console.error("Unable to update VAR viewer:", error);
@@ -654,13 +654,14 @@ function renderViewerStatus(data) {
   const displayText = data.text || "";
   const imageFile = getStatusFileName(data.code);
   const showMessage = typeof data.showMessage === "boolean" ? data.showMessage : getMessageVisibility();
+  const backgroundFile = showMessage || data.code === "CLEAR" ? getStatusFileName("STANDBY") : imageFile;
 
   if (image) {
     image.style.display = "none";
   }
   message.innerHTML = formatMessageText(displayText || "STANDBY");
   message.style.display = (showMessage && data.code !== "CLEAR") ? "block" : "none";
-  document.body.style.backgroundImage = `url("${imageFile}"), url("bg.png")`;
+  document.body.style.backgroundImage = `url("${backgroundFile}"), url("bg.png")`;
 
   message.style.animation = "none";
   void message.offsetWidth;
