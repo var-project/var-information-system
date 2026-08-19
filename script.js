@@ -654,13 +654,14 @@ function renderViewerStatus(data) {
   const displayText = data.text || "";
   const imageFile = getStatusFileName(data.code);
   const showMessage = typeof data.showMessage === "boolean" ? data.showMessage : getMessageVisibility();
-  const backgroundFile = showMessage || data.code === "CLEAR" ? getStatusFileName("STANDBY") : imageFile;
+  const isClear = String(data.code || "").toUpperCase() === "CLEAR";
+  const backgroundFile = isClear ? getStatusFileName("CLEAR") : showMessage ? getStatusFileName("STANDBY") : imageFile;
 
   if (image) {
     image.style.display = "none";
   }
   message.innerHTML = formatMessageText(displayText || "STANDBY");
-  message.style.display = (showMessage && data.code !== "CLEAR") ? "block" : "none";
+  message.style.display = (showMessage && !isClear) ? "block" : "none";
   document.body.style.backgroundImage = `url("${backgroundFile}"), url("bg.png")`;
 
   message.style.animation = "none";
