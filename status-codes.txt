@@ -1,0 +1,35 @@
+# Format: CODE|CATEGORY|WORDING
+# Edit wording here, then refresh controller.html.
+A1|Goal / No Goal|VAR Check Possible Goal
+A2|Goal / No Goal|VAR CheckPossible No Goal
+A3|Goal / No Goal|Check Completed Goal Confirm
+A4|Goal / No Goal|Check Completed Goal Canceled
+A5|Goal / No Goal|Check Completed No Goal
+A6|Goal / No Goal|Check Completed No Offside
+A7|Goal / No Goal|Check Completed Offside
+B1|Red Card|VAR CheckPossible Red Card
+B2|Red Card|VAR CheckPossible No Red Card
+B3|Red Card|Check Completed Red Card
+B4|Red Card|Check Completed No Red Card
+C1|2nd Yellow Card|VAR CheckPossible 2nd Yellow Card
+C2|2nd Yellow Card|VAR Check Possible No 2nd Yellow Card
+C3|2nd Yellow Card|Check Completed Yellow Card
+C4|2nd Yellow Card|Check Completed No Yellow Card
+D1|Penalty|VAR Check Possible Penalty
+D2|Penalty|VAR Check Possible No Penalty
+D3|Penalty|Check Completed Penalty
+D4|Penalty|Check Completed No Penalty
+D5|Penalty|Check Completed Retaken Penalty
+D6|Penalty|Check Completed Offside
+E1|Mistaken Identity|Checking Possible Mistaken Identity
+E2|Mistaken Identity|Checking Possible Red Card Mistaken
+E3|Mistaken Identity|Checking Possible Yellow Card Mistaken
+E4|Mistaken Identity|Check Completed Mistaken Identity
+E5|Mistaken Identity|Check Completed No Mistaken Identity
+F1|Any Incident|VAR Checking
+F2|Any Incident|VAR Review
+F3|Any Incident|VAR Completed
+G1|Status|VAR Inactive
+G2|Status|VAR Active
+G3|Status|VAR Suspended
+G4|Status|VAR Terminated
