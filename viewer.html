@@ -6,6 +6,10 @@
   <meta name="theme-color" content="#000000">
   <title>VAR Information System - Viewer</title>
   <style>
+    :root {
+      --viewer-font: "FIFA Sans", "FIFA Sans Condensed", Arial, Helvetica, sans-serif;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -17,7 +21,7 @@
       margin: 0;
       overflow: hidden;
       background: #000;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: var(--viewer-font);
       -webkit-text-size-adjust: 100%;
     }
 
@@ -45,11 +49,11 @@
       max-width: 90%;
       margin: 0;
       color: #fff;
-      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-family: var(--viewer-font);
       font-size: 6vw;
       line-height: 1.45;
-      font-weight: 400;
-      letter-spacing: 0.05em;
+      font-weight: 900;
+      letter-spacing: 0.03em;
       text-align: center;
       text-transform: uppercase;
       overflow-wrap: anywhere;
