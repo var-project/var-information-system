@@ -1,7 +1,7 @@
 # Format: CODE|CATEGORY|WORDING
 # Edit wording here, then refresh controller.html.
 A1|Goal / No Goal|VAR Check Possible Goal
-A2|Goal / No Goal|VAR CheckPossible No Goal
+A2|Goal / No Goal|VAR Check Possible No Goal
 A3|Goal / No Goal|Check Completed Goal Confirm
 A4|Goal / No Goal|Check Completed Goal Canceled
 A5|Goal / No Goal|Check Completed No Goal
